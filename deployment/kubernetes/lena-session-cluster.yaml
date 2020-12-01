@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: session
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      name: session
+  serviceName: session
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        name: session
+    spec:
+      containers:
+      - name: session
+        image: lenacloud/lena-session:1.3.1.0_6-centos7-jdk8-openjdk
+        readinessProbe:
+          exec:
+            command:
+            - /usr/local/lena/servers/sessionServer/health.sh
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - /usr/local/lena/servers/sessionServer/health.sh
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        ports:
+        - containerPort: 5180
+        envFrom:
+        - configMapRef:
+            name: session-config
+      terminationGracePeriodSeconds: 0
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: session-config
+  namespace: default
+data:
+  LENA_MANAGER_ADDRESS: "lena-manager.default.svc.cluster.local:7700"
+  LENA_MANAGER_MONITORING_PORT: "16100"
+  LENA_CONFIG_TEMPLATE_ID: "session-cluster"
+  LENA_SESSION_0_ADDRESS: "session-0.session.default.svc.cluster.local:5180"
+  LENA_SESSION_1_ADDRESS: "session-1.session.default.svc.cluster.local:5180"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: session
+  namespace: default
+spec:
+  selector:
+    name: session
+  clusterIP: None
