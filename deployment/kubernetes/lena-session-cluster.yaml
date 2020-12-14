@@ -35,6 +35,16 @@ spec:
         envFrom:
         - configMapRef:
             name: session-config
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: name
+                operator: In
+                values:
+                - session
+            topologyKey: "kubernetes.io/hostname"
       terminationGracePeriodSeconds: 0
 
 ---
