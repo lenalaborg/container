@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: web-cluster
-        image: lenacloud/lena-web:1.3.1.0-centos7-jdk8-openjdk
+        image: lenacloud/lena-web:1.5.0.0-centos7-jdk8-openjdk
         livenessProbe:
           httpGet:
             path: /index.html

@@ -1,0 +1,11 @@
+---
+kind: StorageClass                         # pvc 가 생성에 필요한 스토리지 class 정의
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: regionalpd-ssd                     # 임의로 이름 지정 (regional persistent disk)
+provisioner: kubernetes.io/gce-pd          # 아래는 형식이 정해져 있다. google cloud 에서 제공하는 Persistant Disk
+parameters:
+  type: pd-ssd
+  replication-type: regional-pd            # PD scope가 regional로 정의됨.
+reclaimPolicy: Retain                      # PVC가 동적으로 만들지만 지울 때는 보존하겠다.
+volumeBindingMode: WaitForFirstConsumer    # PVC 생성할때 pending으로 두겠다. pod 가 붙을때까지~
